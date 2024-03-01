@@ -1,7 +1,10 @@
 const express = require('express');
 const path = require("path");
 const exphbs = require("express-handlebars");
+const morgan  = require ("morgan");
 const indexRoutes = require('./routes/index.routes'); 
+const notesRoutes = require('./routes/notes.routes'); 
+
 
 // Inicializaciones
 const app = express();
@@ -22,9 +25,12 @@ app.set("view engine", ".hbs");
 
 // Middlewares
 app.use(express.urlencoded({ extended: false }));
+app.use(morgan("dev"));
 
 // Rutas
 app.use(indexRoutes); 
+app.use(notesRoutes); 
+
 
 // Archivos estáticos
 app.use(express.static(path.join(__dirname, "public")));
