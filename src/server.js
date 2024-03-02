@@ -2,6 +2,7 @@ const express = require('express');
 const path = require("path");
 const exphbs = require("express-handlebars");
 const morgan  = require ("morgan");
+const methodOverride = require("method-override");
 const indexRoutes = require('./routes/index.routes'); 
 const notesRoutes = require('./routes/notes.routes'); 
 
@@ -26,6 +27,7 @@ app.set("view engine", ".hbs");
 // Middlewares
 app.use(express.urlencoded({ extended: false }));
 app.use(morgan("dev"));
+app.use(methodOverride("_method"));
 
 // Rutas
 app.use(indexRoutes); 
