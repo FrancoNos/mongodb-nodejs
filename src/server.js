@@ -5,6 +5,7 @@ const morgan  = require ("morgan");
 const methodOverride = require("method-override");
 const indexRoutes = require('./routes/index.routes'); 
 const notesRoutes = require('./routes/notes.routes'); 
+const usersRoutes = require('./routes/users.routes'); 
 const flash = require ("connect-flash");
 const session = require("express-session");
 
@@ -45,7 +46,7 @@ app.use((req, res, next) => {
 // Rutas
 app.use(indexRoutes); 
 app.use(notesRoutes); 
-
+app.use(usersRoutes); 
 
 // Archivos estáticos
 app.use(express.static(path.join(__dirname, "public")));
