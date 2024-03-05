@@ -17,21 +17,23 @@ notesCtrl.createNewNote = async (req, res) =>{
 
 notesCtrl.renderNotes = async (req, res) => {
     try {
-        const notes = await Note.find().lean();  // Utiliza .lean() aquí
+        const notes = await Note.find().lean(); 
         res.render("notes/allnotes", { notes });
     } catch (error) {
         res.status(500).send("Internal Server Error");
     }
 };
 
-
-
-notesCtrl.renderEditForm = (req, res) =>{
-    res.send("render edit form");
+notesCtrl.renderEditForm = async (req, res) =>{
+    const note = await Note.findById(req.params.id).lean();;
+    console.log(note);
+    res.render("notes/edit-notes", { note });
 };
 
-notesCtrl.updateNote = (req, res) =>{
-    res.send("update note");
+notesCtrl.updateNote = async (req, res) =>{
+    const { title, description} = req.body;
+   await Note.findByIdAndUpdate(req.params.id, {title, description});
+    res.redirect("/notes");
 };
 
 notesCtrl.deleteNote = async (req, res) =>{
