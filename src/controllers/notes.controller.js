@@ -1,5 +1,4 @@
 const notesCtrl = {};
-const { redirect } = require("next/dist/server/api-utils");
 const Note = require ("../models/Note");
 
 notesCtrl.renderNoteForm = (req, res) =>{
@@ -9,6 +8,7 @@ notesCtrl.renderNoteForm = (req, res) =>{
 notesCtrl.createNewNote = async (req, res) =>{
     const {title, description} = req.body;
     const newNote = new Note ({title, description});
+    newNote.user = req.user.id;
     await newNote.save();
     req.flash("success_msg", "Nota añadida exitosamente");
 
@@ -17,7 +17,7 @@ notesCtrl.createNewNote = async (req, res) =>{
 
 notesCtrl.renderNotes = async (req, res) => {
     try {
-        const notes = await Note.find().lean(); 
+        const notes = await Note.find({ user: req.user.id }).sort({ createdAt: -1 }).lean();
         res.render("notes/allnotes", { notes });
     } catch (error) {
         res.status(500).send("Internal Server Error");
@@ -26,6 +26,10 @@ notesCtrl.renderNotes = async (req, res) => {
 
 notesCtrl.renderEditForm = async (req, res) =>{
     const note = await Note.findById(req.params.id).lean();;
+    if(note.user != req.user.id){
+        req.flash("error_msg", "No estás autorizado para editar notas de otro usuario.");
+        return res.redirect("/notes");
+    }
     console.log(note);
     res.render("notes/edit-notes", { note });
 };
@@ -39,6 +43,7 @@ notesCtrl.updateNote = async (req, res) =>{
 
 notesCtrl.deleteNote = async (req, res) =>{
    await Note.findByIdAndDelete(req.params.id);
+   
    req.flash("success_msg", "Nota borrada exitosamente");
 
    res.redirect("/notes");
